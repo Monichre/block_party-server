@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, request, json, redirect, render_template, send_from_directory
-from requests import Request
 from uuid import uuid4
 from textwrap import dedent
 from models.blockchain import Blockchain
