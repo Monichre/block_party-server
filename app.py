@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request, json, redirect, render_template, send_from_directory
+from flask_cors import CORS
 from uuid import uuid4
 from textwrap import dedent
 from models.blockchain import Blockchain
@@ -10,6 +11,9 @@ app = Flask(__name__)
 
 # general config
 apply_config(app)
+
+# apply CORS
+CORS(app)
 
 # Create a globally unique address or this node
 node_identifier = str(uuid4()).replace('-', '')
