@@ -4,7 +4,8 @@ from uuid import uuid4
 from textwrap import dedent
 from models.blockchain import Blockchain
 from config import apply_config
-
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 # Instantiate the server --> will move this out of this file at some point
 app = Flask(__name__)
@@ -14,6 +15,11 @@ apply_config(app)
 
 # apply CORS
 CORS(app, origins=['https://block-party-client.herokuapp.com', 'http://localhost:3000'])
+
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+
 
 # Create a globally unique address or this node
 node_identifier = str(uuid4()).replace('-', '')
@@ -89,25 +95,25 @@ def full_chain():
 
     return jsonify(response), 200
 
-@app.route('/spotify/signup', methods = ['POST'])
+@app.route('/users/signup', methods = ['POST'])
+@cross_origin()
 def signup():
 
     data = request.get_json()
     print(data)
-    
-    client_id = data['client_id']
-    client_secret = data['client_secret']
-    scopes = data['scopes']
-    redirect_uri = data['redirect_URI']
 
-    print(client_id)
-    print(client_secret)
-    print(scopes)
-    print(redirect_uri)
+    user_name = data['user_name']
+    profile_photo = data['profile_photo']
+    email = data['email']
+    platforms = data['platforms']
     
-    redirect('https://accounts.spotify.com/authorize' + '?response_type=code' + '&client_id=' + client_id + '&scope=' + json.dumps(scopes) + '&redirect_uri=' + redirect_uri)
-
-    return 'success'
+    print(user_name)
+    print(profile_photo)
+    print(email)
+    print(platforms)
+    
+    
+    return 'success', 200
 
 @app.route('/nodes/register/', methods=['POST'])
 @cross_origin()

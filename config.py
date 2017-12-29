@@ -1,20 +1,21 @@
 import os
 from urllib import parse
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 
-class DevConfig():
+class DevConfig(object):
     DEBUG = True
 
     BASE_URL = 'http://localhost:5000/'
  
 
-class WebStagingConfig():
+class WebStagingConfig(object):
     DEBUG = True
 
     BASE_URL = 'https://himembers-staging.herokuapp.com/'
   
 
-class WebProdConfig():
+class WebProdConfig(object):
     BASE_URL = 'https://members.hikarl.com/'
 
 
