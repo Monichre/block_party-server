@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, json, redirect, render_template, send_from_directory
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from uuid import uuid4
 from textwrap import dedent
 from models.blockchain import Blockchain
@@ -13,7 +13,7 @@ app = Flask(__name__)
 apply_config(app)
 
 # apply CORS
-CORS(app)
+CORS(app, origins=['https://block-party-client.herokuapp.com', 'http://localhost:3000'])
 
 # Create a globally unique address or this node
 node_identifier = str(uuid4()).replace('-', '')
@@ -23,6 +23,7 @@ blockchain = Blockchain()
 
 
 @app.route('/mine', methods=['POST'])
+@cross_origin()
 def mine():
 
     request_data = request.get_json()    
@@ -109,6 +110,7 @@ def signup():
     return 'success'
 
 @app.route('/nodes/register/', methods=['POST'])
+@cross_origin()
 def register_nodes():
 
     values = request.get_json()
