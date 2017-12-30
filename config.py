@@ -1,32 +1,39 @@
 import os
-from urllib import parse
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
-class DevConfig(object):
+class Config:
+    DEBUG = False
+    TESTING = False
+    CSRF_ENABLED = True
+    SECRET_KEY = 'this-really-needs-to-be-changed'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/block_party'
+
+
+class ProductionConfig(Config):
+    DEBUG = False
+
+
+class StagingConfig(Config):
+    DEVELOPMENT = True
     DEBUG = True
 
-    BASE_URL = 'http://localhost:5000/'
- 
 
-class WebStagingConfig(object):
+class DevelopmentConfig(Config):
+    DEVELOPMENT = True
+    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/block_party'
     DEBUG = True
-
-    BASE_URL = 'https://himembers-staging.herokuapp.com/'
-  
-
-class WebProdConfig(object):
-    BASE_URL = 'https://members.hikarl.com/'
-
 
 
 def apply_config(app):
+
     """ Apply configuration for application based on OS environ """
-    if os.environ.get('WEB_PROD', False):
+    
+    if os.environ.get('productionConfig', False):
         config = ProdConfig
-    elif os.environ.get('WEB_STAGING', False):
+    elif os.environ.get('stagingConfig', False):
         config = StagingConfig
     else:
-        config = DevConfig
+        config = DevelopmentConfig
 
     app.config.from_object(config)

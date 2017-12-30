@@ -1,11 +1,16 @@
+import os
 from flask import Flask, jsonify, request, json, redirect, render_template, send_from_directory
 from flask_cors import CORS, cross_origin
 from uuid import uuid4
 from textwrap import dedent
 from models.blockchain import Blockchain
-from config import apply_config
+from models.user import User
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from config import apply_config
+from datetime import datetime
+import uuid
+from models.user import db 
 
 # Instantiate the server --> will move this out of this file at some point
 app = Flask(__name__)
@@ -14,11 +19,15 @@ app = Flask(__name__)
 apply_config(app)
 
 # apply CORS
-CORS(app, origins=['https://block-party-client.herokuapp.com', 'http://localhost:3000'])
+CORS(app, origins=[
+     'https://block-party-client.herokuapp.com', 'http://localhost:3000'])
 
-db = SQLAlchemy(app)
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/block_party'
+
+db.init_app(app)
 migrate = Migrate(app, db)
-
 
 
 # Create a globally unique address or this node
@@ -32,14 +41,14 @@ blockchain = Blockchain()
 @cross_origin()
 def mine():
 
-    request_data = request.get_json()    
+    request_data = request.get_json()
     required = ['musician_id', 'user_id']
 
-    print(request_data['user_id'] + ' is listening to ' + request_data['musician_id'] + '. 25% of this BlockNote attributed to ' + request_data['user_id'] + ', 50% to ' + request_data['musician_id'])
+    print(request_data['user_id'] + ' is listening to ' + request_data['musician_id'] +
+          '. 25% of this BlockNote attributed to ' + request_data['user_id'] + ', 50% to ' + request_data['musician_id'])
 
     if not all(k in request_data for k in required):
         return 'Missing Necessary Data in Request', 400
-
 
     last_block = blockchain.last_block
     last_proof = last_block['proof']
@@ -95,7 +104,8 @@ def full_chain():
 
     return jsonify(response), 200
 
-@app.route('/users/signup', methods = ['POST'])
+
+@app.route('/users/signup', methods=['POST'])
 @cross_origin()
 def signup():
 
@@ -106,14 +116,31 @@ def signup():
     profile_photo = data['profile_photo']
     email = data['email']
     platforms = data['platforms']
-    
+    address = uuid.uuid1()
+
     print(user_name)
     print(profile_photo)
     print(email)
     print(platforms)
+    print(address)
     
-    
+
+    new_user = User(id=None,
+                    password=None,
+                    date_joined=None,
+                    spotify_id=None,
+                    name=user_name,
+                    email=email,
+                    profile_image=profile_photo,
+                    platforms=platforms,
+                    wallet_address=address.int
+                    )
+
+    db.session.add(new_user)
+    db.session.commit()
+
     return 'success', 200
+
 
 @app.route('/nodes/register/', methods=['POST'])
 @cross_origin()
@@ -154,8 +181,5 @@ def consensus():
     return jsonify(response), 200
 
 
-
-
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
-

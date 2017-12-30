@@ -3,3 +3,5 @@ gunicorn
 flask-cors
 flask-sqlalchemy
 flask-migrate
+psycopg2
+autoenv
