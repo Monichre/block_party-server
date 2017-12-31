@@ -207,6 +207,9 @@ def artist_onboard(artist_id):
         else:
             return 'Error'
 
+    # elif request.method == 'POST':
+    
+
 @app.route('/nodes/register/', methods=['POST'])
 @cross_origin()
 def register_nodes():
