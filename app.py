@@ -1,15 +1,15 @@
 import os
-from flask import Flask, jsonify, request, json, redirect, render_template, send_from_directory
+from flask import Flask, jsonify, request, json, redirect, render_template, send_from_directory, make_response
 from flask_cors import CORS, cross_origin
 from uuid import uuid4
 from textwrap import dedent
 from models.blockchain import Blockchain
 from models.user import User
+from models.artist import Artist
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import apply_config
 from datetime import datetime
-import uuid
 from models.user import db 
 
 # Instantiate the server --> will move this out of this file at some point
@@ -17,11 +17,6 @@ app = Flask(__name__)
 
 # general config
 apply_config(app)
-
-# apply CORS
-CORS(app, origins=[
-     'https://block-party-client.herokuapp.com', 'http://localhost:3000'])
-
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/block_party'
@@ -35,6 +30,10 @@ node_identifier = str(uuid4()).replace('-', '')
 
 # Instantiate the Blockchain
 blockchain = Blockchain()
+
+# apply CORS
+# CORS(app, origins=['https://block-party-client.herokuapp.com'])
+CORS(app, origins=['*'])
 
 
 @app.route('/mine', methods=['POST'])
@@ -116,7 +115,7 @@ def signup():
     profile_photo = data['profile_photo']
     email = data['email']
     platforms = data['platforms']
-    address = uuid.uuid1()
+    address = str(uuid4())
 
     print(user_name)
     print(profile_photo)
@@ -133,7 +132,7 @@ def signup():
                     email=email,
                     profile_image=profile_photo,
                     platforms=platforms,
-                    wallet_address=address.int
+                    wallet_address=address
                     )
 
     db.session.add(new_user)
@@ -141,6 +140,72 @@ def signup():
 
     return 'success', 200
 
+@app.route('/artists/signup', methods=['POST'])
+# @cross_origin()
+def artist_signup():
+
+    data = request.get_json()
+    print(data)
+
+    artist_name = data['artist_name']
+    password = data['password']
+    email = data['email']
+    address = str(uuid4())
+
+    print(artist_name)
+    print(email)
+    print(address)
+    
+
+    new_artist = Artist(id=None,
+                    password=password,
+                    date_joined=None,
+                    name=artist_name,
+                    email=email,
+                    profile_image=None,
+                    wallet_address=address
+                    )
+
+    db.session.add(new_artist)
+    db.session.commit()
+
+    resp_data = {
+        'artist':{
+            'artist_name': artist_name,
+            'email': email,
+            'wallet_address': address,
+            'id': new_artist.id
+        }
+    }
+
+    resp = make_response(jsonify(resp_data), 200)
+
+    
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+
+    return resp
+
+
+@app.route('/artists/<string:artist_id>/onboard', methods=['GET', 'POST'])
+@cross_origin()
+def artist_onboard(artist_id):
+    if request.method == "GET":
+        print(artist_id)
+        print(int(artist_id))
+        new_artist = Artist.query.filter_by(id=int(artist_id)).first()
+
+        if new_artist:
+            name = new_artist.name 
+            wallet_address = new_artist.wallet_address
+
+            resp = {
+                'name':name,
+                'wallet_address': wallet_address
+            }
+
+            return jsonify(resp), 200 
+        else:
+            return 'Error'
 
 @app.route('/nodes/register/', methods=['POST'])
 @cross_origin()

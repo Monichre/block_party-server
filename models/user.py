@@ -10,6 +10,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/block_party'
 db = SQLAlchemy(app)
 
 
+
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -21,7 +22,7 @@ class User(db.Model):
     profile_image = db.Column(db.Text, default=None)
     spotify_id = db.Column(db.Integer, default=None)
     platforms = db.Column(db.JSON)
-    wallet_address = db.Column(db.Integer)
+    wallet_address = db.Column(db.Text)
 
 
     def __init__(self, id, name, email, password, date_joined, profile_image, spotify_id, platforms, wallet_address):
