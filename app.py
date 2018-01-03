@@ -19,7 +19,7 @@ app = Flask(__name__)
 apply_config(app)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/block_party'
+
 
 db.init_app(app)
 migrate = Migrate(app, db)

@@ -12,7 +12,7 @@ class Config:
 
 class ProductionConfig(Config):
     DEBUG = False
-
+    DB_URL = parse.urlparse(os.environ.get("DATABASE_URL"))
 
 class StagingConfig(Config):
     DEVELOPMENT = True
