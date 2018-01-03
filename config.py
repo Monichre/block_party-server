@@ -29,7 +29,7 @@ def apply_config(app):
     """ Apply configuration for application based on OS environ """
     
     if os.environ.get('productionConfig', False):
-        config = ProdConfig
+        config = ProductionConfig
     elif os.environ.get('stagingConfig', False):
         config = StagingConfig
     else:

@@ -33,7 +33,7 @@ blockchain = Blockchain()
 
 # apply CORS
 # CORS(app, origins=['https://block-party-client.herokuapp.com'])
-CORS(app, origins=['*'])
+CORS(app, origins=['*', 'https://block-party-client.herokuapp.com'])
 
 
 @app.route('/mine', methods=['POST'])
