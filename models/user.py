@@ -21,11 +21,12 @@ class User(db.Model):
     date_joined = db.Column(db.DateTime, default=datetime.now())
     profile_image = db.Column(db.Text, default=None)
     spotify_id = db.Column(db.Integer, default=None)
+    followers = db.Column(db.Integer, default=None)
     platforms = db.Column(db.JSON)
     wallet_address = db.Column(db.Text)
 
 
-    def __init__(self, id, name, email, password, date_joined, profile_image, spotify_id, platforms, wallet_address):
+    def __init__(self, id, name, email, password, date_joined, profile_image, spotify_id, platforms, wallet_address, followers):
         self.id = id
         self.name = name
         self.email = email
@@ -34,6 +35,7 @@ class User(db.Model):
         self.profile_image = profile_image
         self.spotify_id = spotify_id
         self.platforms = platforms
+        self.followers = followers
         self.wallet_address = wallet_address
     
     def __repr__(self):

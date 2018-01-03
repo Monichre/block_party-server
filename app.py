@@ -10,7 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import apply_config
 from datetime import datetime
-from models.user import db 
+from models.user import db
 
 # Instantiate the server --> will move this out of this file at some point
 app = Flask(__name__)
@@ -108,51 +108,79 @@ def full_chain():
 
 
 @app.route('/users/signup', methods=['POST'])
-@cross_origin()
 def signup():
 
     data = request.get_json()
-    new_user
-    
+    address = str(uuid4())
+
     if data['platform'] == True:
-        print('platform sign up on the backend')
-        new_user = "platform user"
+
+        incoming_user = data['platform_user']
+        print(incoming_user)
+
+        user_name = incoming_user.get('user_name')
+        profile_photo = incoming_user.get('profile_photo')
+        email = incoming_user.get('email')
+        followers = incoming_user.get('followers')
+        platforms = incoming_user.get('platforms')
+        account_tier = incoming_user.get('account_tier')
+        accessToken = incoming_user.get('accessToken')
+
+        new_user = User(id=None,
+                        password=accessToken,
+                        date_joined=None,
+                        spotify_id=None,
+                        name=user_name,
+                        followers=followers,
+                        email=email,
+                        profile_image=profile_photo,
+                        platforms=platforms,
+                        wallet_address=address
+                        )
     else:
         user_name = data['user_name']
         profile_photo = data['profile_photo']
         email = data['email']
         platforms = data['platforms']
-        address = str(uuid4())
 
         print(user_name)
         print(profile_photo)
         print(email)
         print(platforms)
         print(address)
-    
+
         new_user = User(id=None,
                         password=None,
                         date_joined=None,
                         spotify_id=None,
                         name=user_name,
                         email=email,
+                        followers=None,
                         profile_image=profile_photo,
                         platforms=platforms,
                         wallet_address=address
                         )
-
 
     db.session.add(new_user)
     db.session.commit()
 
     resp_data = {
         'success': True,
-        'new_user': new_user
+        'new_user': {
+            'user_name': new_user.name,
+            'profile_photo': new_user.profile_image,
+            'email': new_user.email,
+            'followers': new_user.followers,
+            'platforms': new_user.platforms,
+            'accessToken': new_user.password
+        }
     }
+
     resp = make_response(jsonify(resp_data), 200)
     resp.headers['Access-Control-Allow-Origin'] = '*'
 
     return resp
+
 
 @app.route('/artists/signup', methods=['POST'])
 # @cross_origin()
@@ -169,23 +197,21 @@ def artist_signup():
     print(artist_name)
     print(email)
     print(address)
-    
 
     new_artist = Artist(id=None,
-                    password=password,
-                    date_joined=None,
-                    name=artist_name,
-                    email=email,
-                    profile_image=None,
-                    wallet_address=address
-                    )
+                        password=password,
+                        date_joined=None,
+                        name=artist_name,
+                        email=email,
+                        profile_image=None,
+                        wallet_address=address
+                        )
 
     db.session.add(new_artist)
     db.session.commit()
 
-
     resp_data = {
-        'artist':{
+        'artist': {
             'artist_name': artist_name,
             'email': email,
             'wallet_address': address,
@@ -208,15 +234,15 @@ def artist_onboard(artist_id):
         new_artist = Artist.query.filter_by(id=int(artist_id)).first()
 
         if new_artist:
-            name = new_artist.name 
+            name = new_artist.name
             wallet_address = new_artist.wallet_address
 
             resp = {
-                'name':name,
+                'name': name,
                 'wallet_address': wallet_address
             }
 
-            return jsonify(resp), 200 
+            return jsonify(resp), 200
         else:
             return 'Error'
 
