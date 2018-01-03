@@ -41,10 +41,13 @@ CORS(app, origins=['*'])
 def mine():
 
     request_data = request.get_json()
-    required = ['musician_id', 'user_id']
+    required = ['artist_id', 'user_id']
 
-    print(request_data['user_id'] + ' is listening to ' + request_data['musician_id'] +
-          '. 25% of this BlockNote attributed to ' + request_data['user_id'] + ', 50% to ' + request_data['musician_id'])
+    artist = Artist.query.filter_by(id=int(artist_id)).first()
+    listener = User.query.filter_by(id=int('user_id')).first()
+
+    print(request_data['user_id'] + ' is listening to ' + request_data['artist_id'] +
+          '. 25% of this BlockNote attributed to ' + request_data['user_id'] + ', 50% to ' + request_data['artist_id'])
 
     if not all(k in request_data for k in required):
         return 'Missing Necessary Data in Request', 400
@@ -109,36 +112,47 @@ def full_chain():
 def signup():
 
     data = request.get_json()
-    print(data)
-
-    user_name = data['user_name']
-    profile_photo = data['profile_photo']
-    email = data['email']
-    platforms = data['platforms']
-    address = str(uuid4())
-
-    print(user_name)
-    print(profile_photo)
-    print(email)
-    print(platforms)
-    print(address)
+    new_user
     
+    if data['platform'] == True:
+        print('platform sign up on the backend')
+        new_user = "platform user"
+    else:
+        user_name = data['user_name']
+        profile_photo = data['profile_photo']
+        email = data['email']
+        platforms = data['platforms']
+        address = str(uuid4())
 
-    new_user = User(id=None,
-                    password=None,
-                    date_joined=None,
-                    spotify_id=None,
-                    name=user_name,
-                    email=email,
-                    profile_image=profile_photo,
-                    platforms=platforms,
-                    wallet_address=address
-                    )
+        print(user_name)
+        print(profile_photo)
+        print(email)
+        print(platforms)
+        print(address)
+    
+        new_user = User(id=None,
+                        password=None,
+                        date_joined=None,
+                        spotify_id=None,
+                        name=user_name,
+                        email=email,
+                        profile_image=profile_photo,
+                        platforms=platforms,
+                        wallet_address=address
+                        )
+
 
     db.session.add(new_user)
     db.session.commit()
 
-    return 'success', 200
+    resp_data = {
+        'success': True,
+        'new_user': new_user
+    }
+    resp = make_response(jsonify(resp_data), 200)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+
+    return resp
 
 @app.route('/artists/signup', methods=['POST'])
 # @cross_origin()
@@ -169,6 +183,7 @@ def artist_signup():
     db.session.add(new_artist)
     db.session.commit()
 
+
     resp_data = {
         'artist':{
             'artist_name': artist_name,
@@ -179,8 +194,6 @@ def artist_signup():
     }
 
     resp = make_response(jsonify(resp_data), 200)
-
-    
     resp.headers['Access-Control-Allow-Origin'] = '*'
 
     return resp
@@ -208,7 +221,7 @@ def artist_onboard(artist_id):
             return 'Error'
 
     # elif request.method == 'POST':
-    
+
 
 @app.route('/nodes/register/', methods=['POST'])
 @cross_origin()
