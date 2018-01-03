@@ -7,12 +7,11 @@ class Config:
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = 'this-really-needs-to-be-changed'
-    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/block_party'
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
 
 
 class ProductionConfig(Config):
     DEBUG = False
-    DB_URL = parse.urlparse(os.environ.get("DATABASE_URL"))
 
 class StagingConfig(Config):
     DEVELOPMENT = True
