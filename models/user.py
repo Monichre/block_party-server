@@ -1,15 +1,5 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-app = Flask(__name__)
-
-
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/block_party'
-
-db = SQLAlchemy(app)
-
-
+from .common import db
 
 class User(db.Model):
     __tablename__ = 'users'

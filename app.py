@@ -3,36 +3,32 @@ from flask import Flask, jsonify, request, json, redirect, render_template, send
 from flask_cors import CORS, cross_origin
 from uuid import uuid4
 from textwrap import dedent
-from models.blockchain import Blockchain
-from models.user import User
-from models.artist import Artist
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import apply_config
 from datetime import datetime
-from models.user import db
+from models.blockchain import Blockchain
+from models.user import User
+from models.artist import Artist
+from models.common import db
 
-# Instantiate the server --> will move this out of this file at some point
+
+
 app = Flask(__name__)
 
-# general config
-apply_config(app)
-
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 
-
+apply_config(app)
 db.init_app(app)
+
+
 migrate = Migrate(app, db)
 
-
-# Create a globally unique address or this node
 node_identifier = str(uuid4()).replace('-', '')
-
-# Instantiate the Blockchain
 blockchain = Blockchain()
 
-# apply CORS
-# CORS(app, origins=['https://block-party-client.herokuapp.com'])
+
 CORS(app, origins=['*', 'https://block-party-client.herokuapp.com'])
 
 
@@ -289,4 +285,4 @@ def consensus():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    app.run()
