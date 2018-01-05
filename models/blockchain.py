@@ -45,6 +45,7 @@ class Blockchain(object):
 
     def proof_of_work(self, last_proof):
 
+        # Find a number p that when hashed with the previous block’s solution a hash with 4 leading 0s is produced.
         proof = 0
         while self.valid_proof(last_proof, proof) is False:
             proof += 1
@@ -58,6 +59,7 @@ class Blockchain(object):
         self.nodes.add(parsed_url.netloc)
 
     def valid_chain(self, chain):
+
         # Determine if a given blockchain is valid using a consensus algorithm
         last_block = chain[0]
         current_index = 1
@@ -83,8 +85,8 @@ class Blockchain(object):
             return True
 
         def resolve_conflicts(self):
-            # This here is the actual consensus algorithm
 
+            # This here is the actual consensus algorithm
             neighbors = self.nodes
             new_chain = None
 
@@ -120,8 +122,12 @@ class Blockchain(object):
 
     @staticmethod
     def hash(block):
+
         # Hashes a block, creates a SHA-256 hash of a block
         block_string = json.dumps(block, sort_keys=True).encode()
+
+        print(block_string)
+        print(hashlib.sha256(block_string).hexdigest())
 
         return hashlib.sha256(block_string).hexdigest()
     
