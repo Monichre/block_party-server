@@ -29,4 +29,4 @@ class User(db.Model):
         self.wallet_address = wallet_address
     
     def __repr__(self):
-        return '<id {}>'.format(self.id)
+        return '<User {}, {}>'.format(self.id, self.name)

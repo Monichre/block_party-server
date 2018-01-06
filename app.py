@@ -10,6 +10,8 @@ from datetime import datetime
 from models.blockchain import Blockchain
 from models.user import User
 from models.artist import Artist
+from models.album import Album 
+from models.song import Song
 from models.common import db
 
 
