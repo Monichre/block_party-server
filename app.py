@@ -193,10 +193,6 @@ def artist_signup():
     email = data['email']
     address = str(uuid4())
 
-    print(artist_name)
-    print(email)
-    print(address)
-
     new_artist = Artist(id=None,
                         password=password,
                         date_joined=None,
@@ -222,6 +218,55 @@ def artist_signup():
     resp.headers['Access-Control-Allow-Origin'] = '*'
 
     return resp
+
+
+@app.route('/login', methods=['POST'])
+@cross_origin()
+def login():
+    req = request.get_json()
+    data = req['data']
+
+    print(data)
+
+    if data.get('isArtist'):
+        artist = Artist.query.filter_by(email_address=data['email']).first()
+        print(artist)
+
+        if artist:
+            print(artist)
+            resp_data = {
+                'artist': {
+                    'artist_name': artist.name,
+                    'email': artist.email_address,
+                    'wallet_address': artist.wallet_address,
+                    'id': artist.id
+                }
+            }
+
+            resp = make_response(jsonify(resp_data), 200)
+            resp.headers['Access-Control-Allow-Origin'] = '*'
+
+            return resp
+    else:
+        user = User.query.filter_by(email=data['email']).first()
+        print(user)
+
+        if user:
+            print(user)
+            resp_data = {
+                'user': {
+                    'user_name': user.name,
+                    'email': user.email,
+                    'wallet_address': user.wallet_address,
+                    'id': user.id
+                }
+            }
+
+            resp = make_response(jsonify(resp_data), 200)
+            resp.headers['Access-Control-Allow-Origin'] = '*'
+
+            return resp
+
 
 
 @app.route('/artists/<string:artist_id>/onboard', methods=['GET', 'POST'])
