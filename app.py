@@ -38,17 +38,21 @@ CORS(app, origins=['*', 'https://block-party-client.herokuapp.com'])
 @cross_origin()
 def mine():
 
-    request_data = request.get_json()
-    required = ['artist_id', 'user_id']
+    data = request.get_json()
+    print(data)
+
+    artist_id = data['artist_id']
+    user_id = data['user_id']
+
+    print(artist_id)
+    print(user_id)
 
     artist = Artist.query.filter_by(id=int(artist_id)).first()
-    listener = User.query.filter_by(id=int('user_id')).first()
+    listener = User.query.filter_by(id=int(user_id)).first()
 
-    print(request_data['user_id'] + ' is listening to ' + request_data['artist_id'] +
-          '. 25% of this BlockNote attributed to ' + request_data['user_id'] + ', 50% to ' + request_data['artist_id'])
-
-    if not all(k in request_data for k in required):
-        return 'Missing Necessary Data in Request', 400
+    print(artist)
+    print(listener)
+    print(listener.name + ' is listening to ' + artist.name + '. 25% of this BlockNote attributed to ' + listener.name + ', 50% to ' + artist.name)
 
     last_block = blockchain.last_block
     last_proof = last_block['proof']
@@ -221,7 +225,6 @@ def artist_signup():
 
 
 @app.route('/login', methods=['POST'])
-@cross_origin()
 def login():
     req = request.get_json()
     data = req['data']
@@ -247,16 +250,17 @@ def login():
             resp.headers['Access-Control-Allow-Origin'] = '*'
 
             return resp
-    else:
-        user = User.query.filter_by(email=data['email']).first()
-        print(user)
+    elif data.get('spotify_login'):
+        email = data['platform_user']['email']
+        print(email)
+        user = User.query.filter_by(email=email).first()
 
         if user:
-            print(user)
             resp_data = {
                 'user': {
                     'user_name': user.name,
                     'email': user.email,
+                    'password': user.password,
                     'wallet_address': user.wallet_address,
                     'id': user.id
                 }
