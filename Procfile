@@ -1,4 +1,1 @@
-web: gunicorn app:app 
-init: python manage.py db init
-migrate: python manage.py db migrate
-upgrade: python manage.py db upgrade
+web: flask db upgrade; gunicorn main:app 
