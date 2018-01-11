@@ -1,5 +1,5 @@
 from datetime import datetime
-from .common import db
+from manage import db, app
 
 class Album(db.Model):
     __tablename__ = 'albums'

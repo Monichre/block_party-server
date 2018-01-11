@@ -5,11 +5,8 @@ from app import app, db
 from config import apply_config
 
 apply_config(app)
-
-
 migrate = Migrate(app, db)
 manager = Manager(app)
-
 manager.add_command('db', MigrateCommand)
 
 

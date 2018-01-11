@@ -7,14 +7,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import apply_config
 from datetime import datetime
-from models.blockchain import Blockchain
-from models.user import User
-from models.artist import Artist
-from models.album import Album 
-from models.song import Song
-from models.common import db
-
-
 
 app = Flask(__name__)
 
@@ -22,10 +14,14 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 print(os.environ.get("DATABASE_URL"))
 apply_config(app)
-db.init_app(app)
+# db.init_app(app)
+db = SQLAlchemy(app)
 
-
-migrate = Migrate(app, db)
+from models.blockchain import Blockchain
+from models.user import User
+from models.artist import Artist
+from models.album import Album 
+from models.song import Song
 
 node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
