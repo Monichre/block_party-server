@@ -3,6 +3,7 @@ import json
 from textwrap import dedent
 from time import time
 from urllib.parse import urlparse
+from app import db
 
 
 

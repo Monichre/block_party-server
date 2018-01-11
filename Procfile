@@ -1,4 +1,4 @@
-web: gunicorn manage:app --host 0.0.0.0 --port ${PORT}
+web: gunicorn app:app 
 init: python manage.py db init
 migrate: python manage.py db migrate
 upgrade: python manage.py db upgrade

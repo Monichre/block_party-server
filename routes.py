@@ -1,34 +1,20 @@
 import os
-from flask import Flask, jsonify, request, json, redirect, render_template, send_from_directory, make_response
+from app import app
+from flask import Flask, jsonify, request, json, redirect, render_template, send_from_directory, make_response, current_app
 from flask_cors import CORS, cross_origin
 from uuid import uuid4
 from textwrap import dedent
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from config import apply_config
-from datetime import datetime
+from .models.blockchain import Blockchain
+from .models.user import User
+from .models.artist import Artist
+from .models.album import Album 
+from .models.song import Song
 
-app = Flask(__name__)
 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
-print(os.environ.get("DATABASE_URL"))
-apply_config(app)
-# db.init_app(app)
-db = SQLAlchemy(app)
-
-from models.blockchain import Blockchain
-from models.user import User
-from models.artist import Artist
-from models.album import Album 
-from models.song import Song
+# CORS(app, origins=['*', 'https://block-party-client.herokuapp.com'])
 
 node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
-
-
-CORS(app, origins=['*', 'https://block-party-client.herokuapp.com'])
-
 
 @app.route('/mine', methods=['POST'])
 @cross_origin()

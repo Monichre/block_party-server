@@ -1,18 +1,19 @@
 import os
-basedir = os.path.abspath(os.path.dirname(__file__))
+# basedir = os.path.abspath(os.path.dirname(__file__))
 
 
-class Config:
+class Config(object):
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = 'this-really-needs-to-be-changed'
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'postgresql://localhost/block_party'
 
 
 class ProductionConfig(Config):
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+    SQLALCHEMY_DATABASE_URI = 'postgres://vyifvrvzhxfqjr:6abb99931b0b754a6cef72d4e5c09218e8329d29fcb079527fa86739eff363c2@ec2-23-21-246-25.compute-1.amazonaws.com:5432/d7kdus8jfnjbhj'
+
 
 class StagingConfig(Config):
     DEVELOPMENT = True
@@ -21,19 +22,19 @@ class StagingConfig(Config):
 
 class DevelopmentConfig(Config):
     DEVELOPMENT = True
-    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/block_party'
+    # SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/block_party'
     DEBUG = True
 
 
-def apply_config(app):
+# def apply_config(app):
 
-    """ Apply configuration for application based on OS environ """
+#     """ Apply configuration for application based on OS environ """
     
-    if os.environ.get('productionConfig', False):
-        config = ProductionConfig
-    elif os.environ.get('stagingConfig', False):
-        config = StagingConfig
-    else:
-        config = DevelopmentConfig
+#     if os.environ.get('productionConfig', False):
+#         config = ProductionConfig
+#     elif os.environ.get('stagingConfig', False):
+#         config = StagingConfig
+#     else:
+#         config = DevelopmentConfig
 
-    app.config.from_object(config)
+#     app.config.from_object(config)

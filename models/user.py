@@ -1,5 +1,5 @@
 from datetime import datetime
-from manage import db, app
+from app import db
 
 class User(db.Model):
     __tablename__ = 'users'
