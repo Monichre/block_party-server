@@ -3,7 +3,7 @@ import os
 
 
 class Config(object):
-    DEBUG = False
+    DEBUG = True
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = 'this-really-needs-to-be-changed'
@@ -11,7 +11,7 @@ class Config(object):
 
 
 class ProductionConfig(Config):
-    DEBUG = False
+    DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'postgres://vyifvrvzhxfqjr:6abb99931b0b754a6cef72d4e5c09218e8329d29fcb079527fa86739eff363c2@ec2-23-21-246-25.compute-1.amazonaws.com:5432/d7kdus8jfnjbhj'
 
 
@@ -26,15 +26,15 @@ class DevelopmentConfig(Config):
     DEBUG = True
 
 
-# def apply_config(app):
+def apply_config(app):
 
-#     """ Apply configuration for application based on OS environ """
+    """ Apply configuration for application based on OS environ """
     
-#     if os.environ.get('productionConfig', False):
-#         config = ProductionConfig
-#     elif os.environ.get('stagingConfig', False):
-#         config = StagingConfig
-#     else:
-#         config = DevelopmentConfig
+    if os.environ.get('productionConfig', False):
+        config = ProductionConfig
+    elif os.environ.get('stagingConfig', False):
+        config = StagingConfig
+    else:
+        config = DevelopmentConfig
 
-#     app.config.from_object(config)
+    app.config.from_object(config)
