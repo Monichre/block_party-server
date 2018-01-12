@@ -11,7 +11,7 @@ from .models.album import Album
 from .models.song import Song
 
 
-# CORS(app, origins=['*', 'https://block-party-client.herokuapp.com'])
+CORS(app, origins=['*', 'https://block-party-client.herokuapp.com'])
 
 node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
