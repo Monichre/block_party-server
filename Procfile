@@ -1,1 +1,1 @@
-web: export FLASK_APP=main.py; gunicorn .app
+web: export FLASK_APP=main.py; gunicorn .main
