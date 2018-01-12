@@ -1,5 +1,5 @@
 import os
-from app import app
+from app import app, db
 from flask import Flask, jsonify, request, json, redirect, render_template, send_from_directory, make_response, current_app
 from flask_cors import CORS, cross_origin
 from uuid import uuid4
