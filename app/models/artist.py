@@ -9,7 +9,7 @@ class Artist(db.Model):
     date_joined = db.Column(db.DateTime, default=datetime.now())
     profile_image = db.Column(db.Text, default=None)
     email_address = db.Column(db.Text)
-    # spotify_id = db.Column(db.Integer, default=None)
+    spotify_id = db.Column(db.Integer, default=None)
     wallet_address = db.Column(db.Text)
 
 

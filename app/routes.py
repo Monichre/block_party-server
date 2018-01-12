@@ -4,17 +4,19 @@ from flask import Flask, jsonify, request, json, redirect, render_template, send
 from flask_cors import CORS, cross_origin
 from uuid import uuid4
 from textwrap import dedent
-from .models.blockchain import Blockchain
-from .models.user import User
-from .models.artist import Artist
-from .models.album import Album 
-from .models.song import Song
+# from .models.blockchain import Blockchain
+# from .models.user import User
+# from .models.artist import Artist
+# from .models.album import Album
+# from .models.song import Song
+from .models import *
 
 
 CORS(app, origins=['*', 'https://block-party-client.herokuapp.com'])
 
 node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
+
 
 @app.route('/mine', methods=['POST'])
 @cross_origin()
@@ -34,7 +36,8 @@ def mine():
 
     print(artist)
     print(listener)
-    print(listener.name + ' is listening to ' + artist.name + '. 25% of this BlockNote attributed to ' + listener.name + ', 50% to ' + artist.name)
+    print(listener.name + ' is listening to ' + artist.name +
+          '. 25% of this BlockNote attributed to ' + listener.name + ', 50% to ' + artist.name)
 
     last_block = blockchain.last_block
     last_proof = last_block['proof']
@@ -76,7 +79,7 @@ def new_transaction():
     index = blockchain.new_transaction(
         values['sender'], values['recipient'], values['amount'])
 
-    response = {'message': f'Transaction will be added to Block {index}' }
+    response = {'message': f'Transaction will be added to Block {index}'}
 
     return jsonify(response), 201
 
@@ -183,6 +186,7 @@ def artist_signup():
                         password=password,
                         date_joined=None,
                         name=artist_name,
+                        spotify_id=None,
                         email=email,
                         profile_image=None,
                         wallet_address=address
@@ -254,7 +258,6 @@ def login():
             return resp
 
 
-
 @app.route('/artists/<string:artist_id>/onboard', methods=['GET', 'POST'])
 @cross_origin()
 def artist_onboard(artist_id):
@@ -277,6 +280,72 @@ def artist_onboard(artist_id):
             return 'Error'
 
     # elif request.method == 'POST':
+
+
+@app.route('/users/<string:user_id>/stream/add-artists', methods=['POST'])
+def add_artists_stream(user_id):
+
+    req = request.get_json()
+    stream_data = req['data']
+    user = User.query.filter_by(id=int(user_id)).first()
+    print(user)
+
+    for stream in stream_data.get('recent_tracks'):
+        streamed_artist = stream.artist
+        streamed_song = stream
+        existing_song = Song.query.filter_by(name=streamed_song.name).first()
+        existing_artist = Artist.query.filter_by(
+            name=streamed_artist.name).first()
+        existing_song = Artist.query.filter_by(
+            name=streamed_artist.name).first()
+
+        print(existing_artist)
+        artist = existing_artist
+        if not existing_artist:
+            address = str(uuid4())
+            new_artist = Artist(id=None,
+                                password=None,
+                                date_joined=None,
+                                name=streamed_artist.name,
+                                spotify_id=streamed_artist.spotify_id,
+                                email=None,
+                                profile_image=streamed_artist.photo,
+                                wallet_address=address
+                                )
+            db.session.add(new_artist)
+            db.session.commit()
+            artist = new_artist
+
+        if not existing_song:
+            new_song = Song(id=id,
+                            name=streamed_song.name,
+                            artist_id=artist.id,
+                            popularity=streamed_song.popularity,
+                            spotify_id=streamed_song.spotify_id,
+                            created_at=None,
+                            photo=None,
+                            claps=None,
+                            shares=None,
+                            value=None
+                            )
+            db.session.add(new_song)
+            db.session.commit()
+
+
+        new_stream = Stream(id=id,
+                            song_id=song_id,
+                            user_id=user.id,
+                            artist_id=artist.id,
+                            created_at=None,
+                            played_at=streamed_song.played_at,
+                            duration=streamed_song.duration,
+                            value=None
+                            )
+
+        db.session.add(new_stream)
+        db.session.commit()
+
+    return 'solid'
 
 
 @app.route('/nodes/register/', methods=['POST'])
