@@ -4,12 +4,13 @@ from flask import Flask, jsonify, request, json, redirect, render_template, send
 from flask_cors import CORS, cross_origin
 from uuid import uuid4
 from textwrap import dedent
-# from .models.blockchain import Blockchain
-# from .models.user import User
-# from .models.artist import Artist
-# from .models.album import Album
-# from .models.song import Song
-from .models import *
+from .models.blockchain import Blockchain
+from .models.user import User
+from .models.artist import Artist
+from .models.album import Album
+from .models.song import Song
+from .models.stream import Stream
+
 
 
 CORS(app, origins=['*', 'https://block-party-client.herokuapp.com'])
@@ -151,7 +152,8 @@ def signup():
 
     db.session.add(new_user)
     db.session.commit()
-
+    print(new_user)
+    
     resp_data = {
         'success': True,
         'new_user': {
@@ -160,7 +162,8 @@ def signup():
             'email': new_user.email,
             'followers': new_user.followers,
             'platforms': new_user.platforms,
-            'accessToken': new_user.password
+            'accessToken': new_user.password,
+            "id": new_user.id
         }
     }
 
@@ -287,17 +290,21 @@ def add_artists_stream(user_id):
 
     req = request.get_json()
     stream_data = req['data']
+    recent_tracks = None
+    if 'recent_tracks' in stream_data:
+        recent_tracks = stream_data['recent_tracks']
+    
+    print(recent_tracks)
     user = User.query.filter_by(id=int(user_id)).first()
-    print(user)
-
-    for stream in stream_data.get('recent_tracks'):
-        streamed_artist = stream.artist
+    
+    for stream in recent_tracks:
+        streamed_artist = stream['artist']
         streamed_song = stream
-        existing_song = Song.query.filter_by(name=streamed_song.name).first()
+        existing_song = Song.query.filter_by(name=streamed_song.get('name')).first()
         existing_artist = Artist.query.filter_by(
-            name=streamed_artist.name).first()
+            name=streamed_artist.get('name')).first()
         existing_song = Artist.query.filter_by(
-            name=streamed_artist.name).first()
+            name=streamed_artist.get('name')).first()
 
         print(existing_artist)
         artist = existing_artist
@@ -306,10 +313,10 @@ def add_artists_stream(user_id):
             new_artist = Artist(id=None,
                                 password=None,
                                 date_joined=None,
-                                name=streamed_artist.name,
-                                spotify_id=streamed_artist.spotify_id,
+                                name=streamed_artist.get('name'),
+                                spotify_id=streamed_artist.get('spotify_id'),
                                 email=None,
-                                profile_image=streamed_artist.photo,
+                                profile_image=streamed_artist.get('photo'),
                                 wallet_address=address
                                 )
             db.session.add(new_artist)
@@ -318,10 +325,10 @@ def add_artists_stream(user_id):
 
         if not existing_song:
             new_song = Song(id=id,
-                            name=streamed_song.name,
+                            name=streamed_song.get('name'),
                             artist_id=artist.id,
-                            popularity=streamed_song.popularity,
-                            spotify_id=streamed_song.spotify_id,
+                            popularity=streamed_song.get('popularity'),
+                            spotify_id=streamed_song.get('spotify_id'),
                             created_at=None,
                             photo=None,
                             claps=None,
@@ -337,8 +344,8 @@ def add_artists_stream(user_id):
                             user_id=user.id,
                             artist_id=artist.id,
                             created_at=None,
-                            played_at=streamed_song.played_at,
-                            duration=streamed_song.duration,
+                            played_at=streamed_song.get('played_at'),
+                            duration=streamed_song.get('duration'),
                             value=None
                             )
 

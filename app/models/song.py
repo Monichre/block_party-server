@@ -4,6 +4,7 @@ from app import db
 
 class Song(db.Model):
     __tablename__ = 'songs'
+    __table_args__ = {'extend_existing': True} 
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text)
