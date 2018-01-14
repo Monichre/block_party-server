@@ -11,11 +11,12 @@ class Artist(db.Model):
     date_joined = db.Column(db.DateTime, default=datetime.now())
     profile_image = db.Column(db.Text, default=None)
     email_address = db.Column(db.Text)
-    spotify_id = db.Column(db.Integer, default=None)
+    spotify_id = db.Column(db.Text, default=None)
     wallet_address = db.Column(db.Text)
 
-    def __init__(self, id, name, email, password, date_joined, profile_image, wallet_address):
+    def __init__(self, id, name, email, password, date_joined, profile_image, wallet_address, spotify_id):
         self.id = id
+        self.spotify_id = spotify_id
         self.name = name
         self.date_joined = date_joined
         self.profile_image = profile_image

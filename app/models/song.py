@@ -10,17 +10,19 @@ class Song(db.Model):
     name = db.Column(db.Text)
     artist_id = db.Column(db.Integer, db.ForeignKey('artists.id'))
     # album_id = db.Column(db.Integer, db.ForeignKey('albums.id'))
+    spotify_id = db.Column(db.Text, default=None)
     created_at = db.Column(db.DateTime, default=datetime.now())
     photo = db.Column(db.Text, default=None)
     claps = db.Column(db.Integer, default=None)
     shares = db.Column(db.Integer, default=None)
     value = db.Column(db.Integer, default=None)
 
-    def __init__(self, id, name, artist_id, created_at, photo, claps, shares, value):
+    def __init__(self, id, name, artist_id, created_at, photo, claps, shares, value, spotify_id):
         self.id = id
         self.name = name
         self.artist_id = artist_id
         # self.album = album
+        self.spotify_id = spotify_id
         self.created_at = created_at
         self.photo = photo
         self.claps = claps

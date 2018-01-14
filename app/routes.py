@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from app import app, db
 from flask import Flask, jsonify, request, json, redirect, render_template, send_from_directory, make_response, current_app
 from flask_cors import CORS, cross_origin
@@ -344,7 +345,7 @@ def add_artists_stream(user_id):
                             user_id=user.id,
                             artist_id=artist.id,
                             created_at=None,
-                            played_at=streamed_song.get('played_at'),
+                            played_at=datetime.strptime(streamed_song.get('played_at')),
                             duration=streamed_song.get('duration'),
                             value=None
                             )
