@@ -317,7 +317,7 @@ def add_artists_stream(user_id):
                                 name=streamed_artist.get('name'),
                                 spotify_id=streamed_artist.get('spotify_id'),
                                 email=None,
-                                profile_image=streamed_artist.get('photo'),
+                                profile_image=streamed_artist.get('photo').get('url'),
                                 wallet_address=address
                                 )
             db.session.add(new_artist)
@@ -345,7 +345,7 @@ def add_artists_stream(user_id):
                             user_id=user.id,
                             artist_id=artist.id,
                             created_at=None,
-                            played_at=datetime.strptime(streamed_song.get('played_at')),
+                            played_at=streamed_song.get('played_at'),
                             duration=streamed_song.get('duration'),
                             value=None
                             )
