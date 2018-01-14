@@ -13,6 +13,7 @@ class Artist(db.Model):
     email_address = db.Column(db.Text)
     spotify_id = db.Column(db.Text, default=None)
     wallet_address = db.Column(db.Text)
+    # genres = db.Column(db.Text, default=None)
 
     def __init__(self, id, name, email, password, date_joined, profile_image, wallet_address, spotify_id):
         self.id = id
@@ -22,3 +23,4 @@ class Artist(db.Model):
         self.profile_image = profile_image
         self.wallet_address = wallet_address
         self.email_address = email
+        # self.genres = genres

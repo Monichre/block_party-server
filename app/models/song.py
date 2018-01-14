@@ -17,6 +17,7 @@ class Song(db.Model):
     shares = db.Column(db.Integer, default=None)
     popularity = db.Column(db.Integer, default=None)
     value = db.Column(db.Integer, default=None)
+    # genres = db.Column(db.Text, default=None)
 
     def __init__(self, id, name, artist_id, created_at, photo, claps, shares, value, spotify_id, popularity):
         self.id = id
@@ -30,6 +31,7 @@ class Song(db.Model):
         self.claps = claps
         self.shares = shares
         self.value = value
+        # self.genres = genres
 
     def __repr__(self):
         return '<Song {}, {}>'.format(self.id, self.name)

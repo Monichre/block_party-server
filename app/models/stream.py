@@ -26,4 +26,4 @@ class Stream(db.Model):
         self.value = value
 
     def __repr__(self):
-        return '<Stream {}, {}>'.format(self.id)
+        return '<Stream {}>'.format(self.id)

@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from json import JSONEncoder
 from app import app, db
 from flask import Flask, jsonify, request, json, redirect, render_template, send_from_directory, make_response, current_app
 from flask_cors import CORS, cross_origin
@@ -12,6 +13,10 @@ from .models.album import Album
 from .models.song import Song
 from .models.stream import Stream
 
+
+class MyEncoder(JSONEncoder):
+    def default(self, o):
+        return o.__dict__
 
 
 CORS(app, origins=['*', 'https://block-party-client.herokuapp.com'])
@@ -154,7 +159,7 @@ def signup():
     db.session.add(new_user)
     db.session.commit()
     print(new_user)
-    
+
     resp_data = {
         'success': True,
         'new_user': {
@@ -294,17 +299,18 @@ def add_artists_stream(user_id):
     recent_tracks = None
     if 'recent_tracks' in stream_data:
         recent_tracks = stream_data['recent_tracks']
-    
+
     print(recent_tracks)
     user = User.query.filter_by(id=int(user_id)).first()
-    
+
     for stream in recent_tracks:
         streamed_artist = stream['artist']
         streamed_song = stream
-        existing_song = Song.query.filter_by(name=streamed_song.get('name')).first()
+        existing_song = Song.query.filter_by(
+            name=streamed_song.get('name')).first()
         existing_artist = Artist.query.filter_by(
             name=streamed_artist.get('name')).first()
-      
+
         song = existing_song
         artist = existing_artist
 
@@ -316,7 +322,8 @@ def add_artists_stream(user_id):
                                 name=streamed_artist.get('name'),
                                 spotify_id=streamed_artist.get('spotify_id'),
                                 email=None,
-                                profile_image=streamed_artist.get('photo').get('url'),
+                                profile_image=streamed_artist.get(
+                                    'photo').get('url'),
                                 wallet_address=address
                                 )
             db.session.add(new_artist)
@@ -339,7 +346,6 @@ def add_artists_stream(user_id):
             db.session.commit()
             song = new_song
 
-
         new_stream = Stream(id=None,
                             song_id=song.id,
                             user_id=user.id,
@@ -352,17 +358,37 @@ def add_artists_stream(user_id):
 
         db.session.add(new_stream)
         db.session.commit()
-        
 
     all_user_streams = Stream.query.filter_by(user_id=user.id).all()
-    print(all_user_streams)
+    streams = []
 
-    resp = make_response(jsonify(all_user_streams), 200)
+    for stream in all_user_streams:
+        artist = Artist.query.filter_by(id=int(stream.artist_id)).first()
+        song =  Song.query.filter_by(id=int(stream.song_id)).first()
+
+        print(song)
+        print(artist)
+        
+        new_stream = {
+            'id': stream.id,
+            'song': {
+                'name': song.name,
+                'popularity': song.popularity
+            },
+            'artist':{
+                'name': artist.name,
+                'photo': artist.profile_image
+            },
+            'played_at': stream.played_at,
+            'duration': stream.duration,
+            'value': stream.value
+        }
+        streams.append(new_stream)
+
+    resp = make_response(jsonify(streams), 200)
     resp.headers['Access-Control-Allow-Origin'] = '*'
 
     return resp
-
-    
 
 
 @app.route('/nodes/register/', methods=['POST'])
