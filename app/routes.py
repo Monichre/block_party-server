@@ -304,11 +304,10 @@ def add_artists_stream(user_id):
         existing_song = Song.query.filter_by(name=streamed_song.get('name')).first()
         existing_artist = Artist.query.filter_by(
             name=streamed_artist.get('name')).first()
-        existing_song = Artist.query.filter_by(
-            name=streamed_artist.get('name')).first()
-
-        print(existing_artist)
+      
+        song = existing_song
         artist = existing_artist
+        
         if not existing_artist:
             address = str(uuid4())
             new_artist = Artist(id=None,
@@ -325,7 +324,7 @@ def add_artists_stream(user_id):
             artist = new_artist
 
         if not existing_song:
-            new_song = Song(id=id,
+            new_song = Song(id=None,
                             name=streamed_song.get('name'),
                             artist_id=artist.id,
                             popularity=streamed_song.get('popularity'),
@@ -338,10 +337,11 @@ def add_artists_stream(user_id):
                             )
             db.session.add(new_song)
             db.session.commit()
+            song = new_song
 
 
-        new_stream = Stream(id=id,
-                            song_id=song_id,
+        new_stream = Stream(id=None,
+                            song_id=song.id,
                             user_id=user.id,
                             artist_id=artist.id,
                             created_at=None,
