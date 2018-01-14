@@ -1,5 +1,13 @@
 from datetime import datetime
 from app import db
+from .stream import Stream
+
+# user_stream_table = db.Table('user_streams', db.Model.metadata,
+#                                       db.Column('id', db.Integer, primary_key=True),
+#                                       db.Column('stream_id', db.Integer, db.ForeignKey('stream.id')),
+#                                       db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
+# )
+
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -15,6 +23,7 @@ class User(db.Model):
     followers = db.Column(db.Integer, default=None)
     platforms = db.Column(db.JSON)
     wallet_address = db.Column(db.Text)
+    streams = db.relationship('Stream', secondary='streams', backref='stream')
 
 
     def __init__(self, id, name, email, password, date_joined, profile_image, spotify_id, platforms, wallet_address, followers):
