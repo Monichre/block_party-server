@@ -307,7 +307,7 @@ def add_artists_stream(user_id):
       
         song = existing_song
         artist = existing_artist
-        
+
         if not existing_artist:
             address = str(uuid4())
             new_artist = Artist(id=None,
@@ -352,8 +352,17 @@ def add_artists_stream(user_id):
 
         db.session.add(new_stream)
         db.session.commit()
+        
 
-    return 'solid'
+    all_user_streams = Stream.query.filter_by(user_id=user.id).all()
+    print(all_user_streams)
+
+    resp = make_response(jsonify(all_user_streams), 200)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+
+    return resp
+
+    
 
 
 @app.route('/nodes/register/', methods=['POST'])
